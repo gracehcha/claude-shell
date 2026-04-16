@@ -2047,8 +2047,6 @@
 
       if (!res.ok) throw new Error(`Server error ${res.status}`);
 
-      thinkingEl.remove();
-
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
       let buf = '';
@@ -2082,6 +2080,7 @@
             resolveToolRow(activeToolRow);
             activeToolRow = null;
             if (!msgState) {
+              thinkingEl.remove();
               msgState = startAssistantMsg();
               scrollToBottom(true);
             }
@@ -2090,12 +2089,14 @@
             scrollToBottom();
 
           } else if (evType === 'error') {
+            thinkingEl.remove();
             resolveToolRow(activeToolRow);
             activeToolRow = null;
             if (!msgState) msgState = startAssistantMsg();
             msgState.bubble.innerHTML = `<span style="color:var(--red)">Error: ${payload.message}</span>`;
 
           } else if (evType === 'done') {
+            thinkingEl.remove();
             resolveToolRow(activeToolRow);
             activeToolRow = null;
           }
