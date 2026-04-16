@@ -1200,7 +1200,7 @@
       <!-- Ask bar -->
       <div class="ask-bar-wrap">
         <div class="ask-bar" onclick="focusAskInput()">
-          <div class="ask-avatar">✦</div>
+          <div class="ask-avatar" style="font-size:0"><?xml version="1.0"?><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.5 18" width="16" height="16" fill="white"><path d="M15 3c-3.3 0-6 2.7-6 6 0 1 .3 2 .7 2.8L2 15.3C1.4 15.6 1 16.3 1.2 17c.2.8 1 1.2 1.8 1.1l.8-.2c.3.4.7.6 1.2.6h12c.9 0 1.7-.7 1.9-1.6 1.4-.7 2.6-2.3 2.6-4.9C21.5 8.2 18.5 3 15 3zm0 1.5c2.1 0 5 4.6 5 7.5 0 1.8-.8 3-1.9 3.6-.5-1.2-1.1-2.5-1.1-4.6 0-1.9.8-2.5.8-2.5s-1 .3-1.7 1.4c-.4-.8-.6-1.7-.6-3 0-1.1.4-1.6.4-2.4h-.9zm-1 1.9c-.1.6-.2 1.3-.2 1.6 0 1.1.3 2 .7 2.8l-7.1 3.5C7 12.9 6.5 12 6.5 11c0-.8.7-1.5 1.5-1.5h6zM4.5 17l7.4-3.7c.3.3.6.6 1 .8v.9H5.5c-.4 0-.7-.2-1-.4l-.5-.3-.4.3-.8.2c-.3 0-.4-.3-.3-.5L4.5 17z"/></svg></div>
           <div class="ask-input-area">
             <textarea class="ask-input" id="askInput" rows="1"
               placeholder="Describe what you want Claude to do… e.g. "Fix the login bug" or "Add dark mode""
@@ -1398,14 +1398,14 @@
 
         <div class="terminal-body" id="chatBody">
           <div class="msg claude">
-            <div class="msg-avatar claude">✦</div>
+            <div class="msg-avatar claude"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.5 18" width="14" height="14" fill="white"><path d="M15 3c-3.3 0-6 2.7-6 6 0 1 .3 2 .7 2.8L2 15.3C1.4 15.6 1 16.3 1.2 17c.2.8 1 1.2 1.8 1.1l.8-.2c.3.4.7.6 1.2.6h12c.9 0 1.7-.7 1.9-1.6 1.4-.7 2.6-2.3 2.6-4.9C21.5 8.2 18.5 3 15 3zm0 1.5c2.1 0 5 4.6 5 7.5 0 1.8-.8 3-1.9 3.6-.5-1.2-1.1-2.5-1.1-4.6 0-1.9.8-2.5.8-2.5s-1 .3-1.7 1.4c-.4-.8-.6-1.7-.6-3 0-1.1.4-1.6.4-2.4h-.9zm-1 1.9c-.1.6-.2 1.3-.2 1.6 0 1.1.3 2 .7 2.8l-7.1 3.5C7 12.9 6.5 12 6.5 11c0-.8.7-1.5 1.5-1.5h6zM4.5 17l7.4-3.7c.3.3.6.6 1 .8v.9H5.5c-.4 0-.7-.2-1-.4l-.5-.3-.4.3-.8.2c-.3 0-.4-.3-.3-.5L4.5 17z"/></svg></div>
             <div class="msg-bubble">
               Hi! I'm Claude. I can read your files, write code, run commands, and help you ship faster.<br><br>
               What are we working on today?
             </div>
           </div>
           <div class="typing-indicator" id="typingIndicator">
-            <div class="msg-avatar claude">✦</div>
+            <div class="msg-avatar claude"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.5 18" width="14" height="14" fill="white"><path d="M15 3c-3.3 0-6 2.7-6 6 0 1 .3 2 .7 2.8L2 15.3C1.4 15.6 1 16.3 1.2 17c.2.8 1 1.2 1.8 1.1l.8-.2c.3.4.7.6 1.2.6h12c.9 0 1.7-.7 1.9-1.6 1.4-.7 2.6-2.3 2.6-4.9C21.5 8.2 18.5 3 15 3zm0 1.5c2.1 0 5 4.6 5 7.5 0 1.8-.8 3-1.9 3.6-.5-1.2-1.1-2.5-1.1-4.6 0-1.9.8-2.5.8-2.5s-1 .3-1.7 1.4c-.4-.8-.6-1.7-.6-3 0-1.1.4-1.6.4-2.4h-.9zm-1 1.9c-.1.6-.2 1.3-.2 1.6 0 1.1.3 2 .7 2.8l-7.1 3.5C7 12.9 6.5 12 6.5 11c0-.8.7-1.5 1.5-1.5h6zM4.5 17l7.4-3.7c.3.3.6.6 1 .8v.9H5.5c-.4 0-.7-.2-1-.4l-.5-.3-.4.3-.8.2c-.3 0-.4-.3-.3-.5L4.5 17z"/></svg></div>
             <div class="typing-dots">
               <div class="typing-dot"></div>
               <div class="typing-dot"></div>
@@ -1591,6 +1591,17 @@
 <div class="toast" id="toast"></div>
 
 <script>
+  // ─── Mollusk avatar SVG ───────────────────────────────────────────
+  const MOLLUSK_SVG = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 21.5 18" width="14" height="14" fill="white"><path d="M15 3c-3.3 0-6 2.7-6 6 0 1 .3 2 .7 2.8L2 15.3C1.4 15.6 1 16.3 1.2 17c.2.8 1 1.2 1.8 1.1l.8-.2c.3.4.7.6 1.2.6h12c.9 0 1.7-.7 1.9-1.6 1.4-.7 2.6-2.3 2.6-4.9C21.5 8.2 18.5 3 15 3zm0 1.5c2.1 0 5 4.6 5 7.5 0 1.8-.8 3-1.9 3.6-.5-1.2-1.1-2.5-1.1-4.6 0-1.9.8-2.5.8-2.5s-1 .3-1.7 1.4c-.4-.8-.6-1.7-.6-3 0-1.1.4-1.6.4-2.4h-.9zm-1 1.9c-.1.6-.2 1.3-.2 1.6 0 1.1.3 2 .7 2.8l-7.1 3.5C7 12.9 6.5 12 6.5 11c0-.8.7-1.5 1.5-1.5h6zM4.5 17l7.4-3.7c.3.3.6.6 1 .8v.9H5.5c-.4 0-.7-.2-1-.4l-.5-.3-.4.3-.8.2c-.3 0-.4-.3-.3-.5L4.5 17z"/></svg>`;
+
+  function molluskAvatar(cls, extraStyle) {
+    const div = document.createElement('div');
+    div.className = cls;
+    if (extraStyle) div.style.cssText = extraStyle;
+    div.innerHTML = MOLLUSK_SVG;
+    return div;
+  }
+
   // ─── Navigation ───────────────────────────────────────────────────
   function showView(name) {
     document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1626,7 +1637,11 @@
       const chatBody = document.getElementById('chatBody');
       const stub = document.createElement('div');
       stub.className = 'msg claude';
-      stub.innerHTML = `<div class="msg-avatar claude">✦</div><div class="msg-bubble">Welcome back! I've loaded your <strong>${name}</strong> session. What would you like to continue?</div>`;
+      stub.appendChild(molluskAvatar('msg-avatar claude'));
+      const bubble = document.createElement('div');
+      bubble.className = 'msg-bubble';
+      bubble.innerHTML = `Welcome back! I've loaded your <strong>${name}</strong> session. What would you like to continue?`;
+      stub.appendChild(bubble);
       chatBody.insertBefore(stub, document.getElementById('typingIndicator'));
       chatBody.scrollTop = chatBody.scrollHeight;
     }, 1200);
@@ -1838,7 +1853,7 @@
     div.className = 'msg claude';
     const bubble = document.createElement('div');
     bubble.className = 'msg-bubble';
-    div.appendChild(Object.assign(document.createElement('div'), { className: 'msg-avatar claude', textContent: '✦' }));
+    div.appendChild(molluskAvatar('msg-avatar claude'));
     div.appendChild(bubble);
     insertBeforeTyping(div);
     return { div, bubble, raw: '' };
@@ -1918,13 +1933,8 @@
     const thinkingEl = document.createElement('div');
     thinkingEl.className = 'typing-indicator visible';
     thinkingEl.id = 'inlineTyping';
-    thinkingEl.innerHTML = `
-      <div class="msg-avatar claude">✦</div>
-      <div class="typing-dots">
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-        <div class="typing-dot"></div>
-      </div>`;
+    thinkingEl.appendChild(molluskAvatar('msg-avatar claude'));
+    thinkingEl.innerHTML += `<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
     const chatBody = document.getElementById('chatBody');
     const staticTyping = document.getElementById('typingIndicator');
     if (staticTyping) chatBody.insertBefore(thinkingEl, staticTyping);
@@ -2046,19 +2056,23 @@
     }).catch(() => {});
 
     const chatBody = document.getElementById('chatBody');
-    chatBody.innerHTML = `
-      <div class="msg claude">
-        <div class="msg-avatar claude">✦</div>
-        <div class="msg-bubble">Hi! I'm Claude. I can read your files, write code, run commands, and help you ship faster.<br><br>What are we working on today?</div>
-      </div>
-      <div class="typing-indicator" id="typingIndicator">
-        <div class="msg-avatar claude">✦</div>
-        <div class="typing-dots">
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-          <div class="typing-dot"></div>
-        </div>
-      </div>`;
+    chatBody.innerHTML = '';
+
+    const greetMsg = document.createElement('div');
+    greetMsg.className = 'msg claude';
+    greetMsg.appendChild(molluskAvatar('msg-avatar claude'));
+    const greetBubble = document.createElement('div');
+    greetBubble.className = 'msg-bubble';
+    greetBubble.innerHTML = "Hi! I'm Claude. I can read your files, write code, run commands, and help you ship faster.<br><br>What are we working on today?";
+    greetMsg.appendChild(greetBubble);
+    chatBody.appendChild(greetMsg);
+
+    const sentinel = document.createElement('div');
+    sentinel.className = 'typing-indicator';
+    sentinel.id = 'typingIndicator';
+    sentinel.appendChild(molluskAvatar('msg-avatar claude'));
+    sentinel.innerHTML += `<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    chatBody.appendChild(sentinel);
     document.getElementById('chatTitle').textContent = 'New Session';
     showToast('🆕 New session started');
   }
