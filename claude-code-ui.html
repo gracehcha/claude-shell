@@ -1683,52 +1683,9 @@
     document.getElementById(id).click();
   }
 
-  function handleFiles(input, context) {
-    const containerId = context === 'chat' ? 'chatAttachments' : 'askAttachments';
-    const container = document.getElementById(containerId);
-    const files = Array.from(input.files);
-    if (!files.length) return;
-
-    files.forEach(file => {
-      // Avoid duplicates by name
-      const existing = container.querySelectorAll('.file-pill-name');
-      for (const el of existing) {
-        if (el.textContent === file.name) return;
-      }
-
-      const pill = document.createElement('div');
-      pill.className = 'file-pill';
-      pill.dataset.fileName = file.name;
-
-      const icon = fileIcon(file);
-      const nameSpan = document.createElement('span');
-      nameSpan.className = 'file-pill-name';
-      nameSpan.title = file.name;
-      nameSpan.textContent = icon + ' ' + file.name;
-
-      const removeBtn = document.createElement('button');
-      removeBtn.className = 'file-pill-remove';
-      removeBtn.textContent = '✕';
-      removeBtn.title = 'Remove';
-      removeBtn.onclick = () => {
-        pill.remove();
-        showToast('🗑 Removed ' + file.name);
-      };
-
-      pill.appendChild(nameSpan);
-      pill.appendChild(removeBtn);
-      container.appendChild(pill);
-    });
-
-    const n = files.length;
-    showToast('📎 ' + n + ' file' + (n > 1 ? 's' : '') + ' attached');
-    // Reset so the same file can be re-added after removal
-    input.value = '';
-  }
-
   function fileIcon(file) {
-    const t = file.type;
-    const name = file.name.toLowerCase();
+    const t = (file && file.type) || '';
+    const name = ((file && file.name) || '').toLowerCase();
     if (t.startsWith('image/')) return '🖼';
     if (t === 'application/pdf') return '📄';
     if (t.startsWith('text/') || /\.(js|ts|jsx|tsx|py|rb|go|rs|java|c|cpp|h|css|html|json|yaml|yml|toml|md|sh)$/.test(name)) return '📝';
@@ -1736,6 +1693,97 @@
     if (/\.(mp4|mov|avi|webm)$/.test(name)) return '🎬';
     if (/\.(mp3|wav|ogg|flac)$/.test(name)) return '🎵';
     return '📎';
+  }
+
+  // Read a File and return { name, content } where content is a string
+  function readFileAsText(file) {
+    return new Promise((resolve, reject) => {
+      if (file.type.startsWith('image/')) {
+        // For images, return a data URL so we can show a preview
+        const reader = new FileReader();
+        reader.onload = e => resolve({ name: file.name, type: 'image', content: e.target.result });
+        reader.onerror = reject;
+        reader.readAsDataURL(file);
+      } else {
+        const reader = new FileReader();
+        reader.onload = e => resolve({ name: file.name, type: 'text', content: e.target.result });
+        reader.onerror = reject;
+        reader.readAsText(file);
+      }
+    });
+  }
+
+  function addFilePill(container, file, fileData) {
+    // Avoid duplicates
+    for (const el of container.querySelectorAll('.file-pill')) {
+      if (el.dataset.fileName === file.name) return;
+    }
+    const pill = document.createElement('div');
+    pill.className = 'file-pill';
+    pill.dataset.fileName = file.name;
+    pill._fileData = fileData; // store parsed content directly on element
+
+    const icon = fileIcon(file);
+    const nameSpan = document.createElement('span');
+    nameSpan.className = 'file-pill-name';
+    nameSpan.title = file.name;
+    nameSpan.textContent = icon + ' ' + file.name;
+
+    // Image thumbnail preview
+    if (fileData.type === 'image') {
+      const thumb = document.createElement('img');
+      thumb.src = fileData.content;
+      thumb.style.cssText = 'width:18px;height:18px;object-fit:cover;border-radius:3px;flex-shrink:0';
+      pill.appendChild(thumb);
+    }
+
+    const removeBtn = document.createElement('button');
+    removeBtn.className = 'file-pill-remove';
+    removeBtn.textContent = '✕';
+    removeBtn.title = 'Remove';
+    removeBtn.onclick = () => { pill.remove(); };
+
+    pill.appendChild(nameSpan);
+    pill.appendChild(removeBtn);
+    container.appendChild(pill);
+  }
+
+  async function handleFiles(input, context) {
+    const containerId = context === 'chat' ? 'chatAttachments' : 'askAttachments';
+    const container = document.getElementById(containerId);
+    const files = Array.from(input.files);
+    if (!files.length) return;
+
+    let added = 0;
+    for (const file of files) {
+      try {
+        const fileData = await readFileAsText(file);
+        addFilePill(container, file, fileData);
+        added++;
+      } catch (e) {
+        showToast('⚠ Could not read ' + file.name);
+      }
+    }
+    if (added) showToast('📎 ' + added + ' file' + (added > 1 ? 's' : '') + ' attached');
+    input.value = '';
+  }
+
+  // Collect all attached file contents from a container and build a prefix string
+  function collectAttachments(containerId) {
+    const container = document.getElementById(containerId);
+    if (!container) return '';
+    const parts = [];
+    for (const pill of container.querySelectorAll('.file-pill')) {
+      const fd = pill._fileData;
+      if (!fd) continue;
+      if (fd.type === 'image') {
+        parts.push(`[Attached image: ${fd.name}]\n(Image data URL omitted — describe what you see if needed)`);
+      } else {
+        parts.push(`<file name="${fd.name}">\n${fd.content}\n</file>`);
+      }
+    }
+    container.innerHTML = '';
+    return parts.length ? parts.join('\n\n') + '\n\n' : '';
   }
 
   function handleAskKey(e) {
@@ -1747,13 +1795,14 @@
 
   function submitAsk() {
     const val = document.getElementById('askInput').value.trim();
-    if (!val) return;
+    if (!val && !document.querySelector('#askAttachments .file-pill')) return;
     document.getElementById('askInput').value = '';
     document.getElementById('askInput').style.height = 'auto';
-    document.getElementById('askAttachments').innerHTML = '';
+    const prefix = collectAttachments('askAttachments');
+    const fullMsg = prefix + (val || '(See attached files)');
     showView('chat');
-    document.getElementById('chatTitle').textContent = val.length > 40 ? val.slice(0, 40) + '…' : val;
-    sendMessage(val);
+    document.getElementById('chatTitle').textContent = val.length > 40 ? val.slice(0, 40) + '…' : 'Attached files';
+    sendMessage(fullMsg);
   }
 
   // ─── Quick actions ────────────────────────────────────────────────
@@ -1790,11 +1839,11 @@
   function sendChat() {
     const input = document.getElementById('chatInput');
     const val = input.value.trim();
-    if (!val) return;
+    if (!val && !document.querySelector('#chatAttachments .file-pill')) return;
     input.value = '';
     input.style.height = 'auto';
-    document.getElementById('chatAttachments').innerHTML = '';
-    sendMessage(val);
+    const prefix = collectAttachments('chatAttachments');
+    sendMessage(prefix + (val || '(See attached files)'));
   }
 
   // ─── Markdown renderer ───────────────────────────────────────────
@@ -2223,6 +2272,49 @@
 
   setupScrollTracking();
   renderHistorySidebar();
+
+  // ─── Paste image into chat ────────────────────────────────────────
+  document.getElementById('chatInput').addEventListener('paste', async e => {
+    const items = Array.from(e.clipboardData.items || []);
+    const imageItems = items.filter(i => i.type.startsWith('image/'));
+    if (!imageItems.length) return;
+    e.preventDefault();
+    const container = document.getElementById('chatAttachments');
+    for (const item of imageItems) {
+      const file = item.getAsFile();
+      if (!file) continue;
+      const namedFile = new File([file], 'pasted-image-' + Date.now() + '.png', { type: file.type });
+      const fileData = await readFileAsText(namedFile);
+      addFilePill(container, namedFile, fileData);
+    }
+    showToast('📋 Image pasted');
+  });
+
+  // ─── Drag and drop files onto chat input area ─────────────────────
+  const dropZone = document.querySelector('.terminal-input-bar');
+  dropZone.addEventListener('dragover', e => {
+    e.preventDefault();
+    dropZone.style.background = 'var(--surface-2)';
+  });
+  dropZone.addEventListener('dragleave', () => {
+    dropZone.style.background = '';
+  });
+  dropZone.addEventListener('drop', async e => {
+    e.preventDefault();
+    dropZone.style.background = '';
+    const files = Array.from(e.dataTransfer.files);
+    if (!files.length) return;
+    const container = document.getElementById('chatAttachments');
+    let added = 0;
+    for (const file of files) {
+      try {
+        const fileData = await readFileAsText(file);
+        addFilePill(container, file, fileData);
+        added++;
+      } catch { showToast('⚠ Could not read ' + file.name); }
+    }
+    if (added) showToast('📎 ' + added + ' file' + (added > 1 ? 's' : '') + ' dropped');
+  });
 
   // Keyboard shortcut: Cmd+K focuses search
   document.addEventListener('keydown', e => {
