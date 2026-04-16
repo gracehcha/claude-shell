@@ -1843,16 +1843,13 @@
 
   function setStatus(working) {
     const dot = document.getElementById('chatStatusDot');
-    const lbl = document.getElementById('chatStatusLabel');
     const btn = document.getElementById('chatSend');
 
     if (working) {
       if (dot) { dot.style.cssText = 'background:var(--yellow);box-shadow:0 0 6px rgba(251,191,36,0.4)'; dot.classList.add('pulsing'); }
-      lbl.textContent = 'thinking…';
       if (btn) btn.disabled = true;
     } else {
       if (dot) { dot.style.cssText = ''; dot.classList.remove('pulsing'); }
-      lbl.textContent = '';
       if (btn) btn.disabled = false;
     }
   }
@@ -1918,8 +1915,21 @@
 
     addUserMsg(text);
 
-    const typing = document.getElementById('typingIndicator');
-    if (typing) typing.classList.add('visible');
+    // Create an inline thinking indicator and append it after the user message
+    const thinkingEl = document.createElement('div');
+    thinkingEl.className = 'typing-indicator visible';
+    thinkingEl.id = 'inlineTyping';
+    thinkingEl.innerHTML = `
+      <div class="msg-avatar claude">✦</div>
+      <div class="typing-dots">
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+        <div class="typing-dot"></div>
+      </div>`;
+    const chatBody = document.getElementById('chatBody');
+    const staticTyping = document.getElementById('typingIndicator');
+    if (staticTyping) chatBody.insertBefore(thinkingEl, staticTyping);
+    else chatBody.appendChild(thinkingEl);
     scrollToBottom(true);
 
     let msgState = null;
@@ -1934,7 +1944,7 @@
 
       if (!res.ok) throw new Error(`Server error ${res.status}`);
 
-      if (typing) typing.classList.remove('visible');
+      thinkingEl.remove();
 
       const reader = res.body.getReader();
       const decoder = new TextDecoder();
@@ -1990,7 +2000,7 @@
       }
 
     } catch (err) {
-      if (typing) typing.classList.remove('visible');
+      thinkingEl.remove();
       resolveToolRow(activeToolRow);
       if (!msgState) msgState = startAssistantMsg();
       msgState.bubble.innerHTML =
