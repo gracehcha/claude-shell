@@ -1383,9 +1383,6 @@
           <div class="terminal-header-row">
             <button class="ti-btn secondary" onclick="showView('home')" title="Back">←</button>
             <div class="terminal-title" id="chatTitle">New Session</div>
-            <div class="terminal-status">
-              <div class="status-dot" id="chatStatusDot"></div>
-            </div>
             <button class="ti-btn secondary" onclick="copyLocalUrl()" title="Copy local URL" style="font-size:0.75rem;width:auto;padding:0 0.5rem;gap:0.25rem;">🔗 localhost</button>
             <button class="ti-btn secondary" onclick="clearChat()" title="New session">+</button>
           </div>
@@ -1657,8 +1654,6 @@
     const sentinel = document.createElement('div');
     sentinel.className = 'typing-indicator';
     sentinel.id = 'typingIndicator';
-    sentinel.appendChild(molluskAvatar('msg-avatar claude'));
-    sentinel.innerHTML += `<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
     chatBody.appendChild(sentinel);
 
     chatBody.scrollTop = chatBody.scrollHeight;
@@ -2030,7 +2025,10 @@
     thinkingEl.className = 'typing-indicator visible';
     thinkingEl.id = 'inlineTyping';
     thinkingEl.appendChild(molluskAvatar('msg-avatar claude'));
-    thinkingEl.innerHTML += `<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+    const thinkingDots = document.createElement('div');
+    thinkingDots.className = 'typing-dots';
+    thinkingDots.innerHTML = `<div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div>`;
+    thinkingEl.appendChild(thinkingDots);
     const chatBody = document.getElementById('chatBody');
     const staticTyping = document.getElementById('typingIndicator');
     if (staticTyping) chatBody.insertBefore(thinkingEl, staticTyping);
@@ -2174,8 +2172,6 @@
     const sentinel = document.createElement('div');
     sentinel.className = 'typing-indicator';
     sentinel.id = 'typingIndicator';
-    sentinel.appendChild(molluskAvatar('msg-avatar claude'));
-    sentinel.innerHTML += `<div class="typing-dots"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
     chatBody.appendChild(sentinel);
     document.getElementById('chatTitle').textContent = 'New Session';
     showToast('🆕 New session started');
