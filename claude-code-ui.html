@@ -2011,6 +2011,30 @@
     isStreaming = false;
     setStatus(false);
     scrollToBottom(true);
+    playDoneSound();
+  }
+
+  // ─── Completion sound ─────────────────────────────────────────────
+  function playDoneSound() {
+    try {
+      const ctx = new (window.AudioContext || window.webkitAudioContext)();
+      const notes = [783.99, 1046.50]; // G5 → C6, short ascending chime
+      let t = ctx.currentTime;
+      notes.forEach((freq, i) => {
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.type = 'sine';
+        osc.frequency.setValueAtTime(freq, t);
+        gain.gain.setValueAtTime(0, t);
+        gain.gain.linearRampToValueAtTime(0.18, t + 0.01);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.22);
+        osc.start(t);
+        osc.stop(t + 0.22);
+        t += 0.13;
+      });
+    } catch (_) {}
   }
 
   // ─── Clear / new session ─────────────────────────────────────────
