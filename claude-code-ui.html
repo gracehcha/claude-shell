@@ -1386,7 +1386,6 @@
             <div class="terminal-title" id="chatTitle">New Session</div>
             <div class="terminal-status">
               <div class="status-dot" id="chatStatusDot"></div>
-              <span id="chatStatusLabel"></span>
             </div>
             <button class="ti-btn secondary" onclick="copyLocalUrl()" title="Copy local URL" style="font-size:0.75rem;width:auto;padding:0 0.5rem;gap:0.25rem;">🔗 localhost</button>
             <button class="ti-btn secondary" onclick="clearChat()" title="New session">+</button>
@@ -1842,14 +1841,10 @@
   }
 
   function setStatus(working) {
-    const dot = document.getElementById('chatStatusDot');
     const btn = document.getElementById('chatSend');
-
     if (working) {
-      if (dot) { dot.style.cssText = 'background:var(--yellow);box-shadow:0 0 6px rgba(251,191,36,0.4)'; dot.classList.add('pulsing'); }
       if (btn) btn.disabled = true;
     } else {
-      if (dot) { dot.style.cssText = ''; dot.classList.remove('pulsing'); }
       if (btn) btn.disabled = false;
     }
   }
